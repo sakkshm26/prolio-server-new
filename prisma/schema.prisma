@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model profile {
+  id                      String                     @id @default(uuid())
+  user_id                 String                  
+  user                    user                       @relation(fields: [user_id], references: [id])   
+  username                String                     @unique
+  display_name            String?
+  email_id                String?
+  email_text              String?
+  web_url                 String?
+  web_url_text            String?
+  bio                     String?
+  profile_image           String?
+  update_time             DateTime?
+  created_at              DateTime                   @default(now())              
+  updated_at              DateTime?    
+  twitter_profiles        twitter_profile[]
+  youtube_profiles        youtube_profile[]
+}
+
+model tweet {
+  id                      String                     @id @default(uuid())
+  tweet_id                String
+  text                    String
+  retweet_count           Int
+  reply_count             Int
+  like_count              Int
+  twitter_profile_id      String
+  twitter_profile         twitter_profile            @relation(fields: [twitter_profile_id], references: [id]) 
+}
+
+model twitter_profile {
+  id                      String                     @id @default(uuid())
+  twitter_id              String   
+  profile_id              String?
+  profile                 profile?                    @relation(fields: [profile_id], references: [id]) 
+  name                    String
+  username                String
+  tweet_count             Int
+  followers_count         Int
+  following_count         Int
+  recent_tweets           tweet[]
+}
+
+model user {
+  id                      String                     @id @default(uuid())
+  name                    String
+  email                   String                     @unique
+  password                String
+  created_at              DateTime                   @default(now())              
+  updated_at              DateTime?   
+  profiles                profile[]
+}
+
+model youtube_profile {
+  id                      String                     @id @default(uuid())
+  youtube_id              String
+  profile_id              String?
+  profile                 profile?                   @relation(fields: [profile_id], references: [id]) 
+  name                    String                     
+  subscriber_count        Int                     
+  video_count             Int                     
+  view_count              Int               
+  recent_videos           youtube_video[]    
+}
+
+model youtube_video {
+  id                      String                     @id @default(uuid())
+  video_id                String 
+  title                   String
+  view_count              Int
+  like_count              Int
+  comment_count           Int
+  youtube_profile_id      String
+  youtube_profile         youtube_profile            @relation(fields: [youtube_profile_id], references: [id]) 
+}
